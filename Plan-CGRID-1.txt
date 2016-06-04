@@ -1,0 +1,72 @@
+Bài tập 1: Môn tính toán lưới
+(Deadline: 12h 9/6/2016)
+Chủ đề: Parallelized algorithm for finding frequent Item sets
+* Lên plan (Done) - Toàn
+* Chuẩn bị tài liệu (Start: 1/6/2016 Dealine: 23h 2/6/2016)
+	- Thống kê (dạng danh mục tài liệu tham khảo) và tải các bài báo liên quan
+	điển hình:1 bài giải thuật tuần tự, 1 bài giải thuật song song
+	(chọn bài tốt nhất có thể và mới nhất trong các bài) - A.Hà ----> Toàn (done)
+* Chuẩn bị dữ liệu và server thử nghiệm(Start 1/6/2016 Deadline: 20h 3/6/2016)
+	- Chuẩn bị server (Start 1/6/2016 Deadline: 18h 2/6/2016) - A.Minh
+	- Chuẩn bị dữ liệu: trên web của UCI (Univ. of Cali. At Irvine)]
+	[chia thành các gói với kích thước khác nhau] (Start 1/6/2016 - 
+	Deadline: 20h 3/6/2016) - A.Đức
+* Xây dựng giải thuật tuần tự (Start: 12h 3/6/2016 Deadline: 23h 6/6/2016)
+	- Cài đặt (Start: 12h 3/6/2016 Deadline: 23h 5/6/2016) - All
+	- Chạy thử nghiệm và theo dõi server (Start: 23h 5/6/2016 - 23h 6/6/2016) - Toàn, A.Minh 
+* Xây dựng giải thuật song song hóa (Start:23h 5/6/2016  - Deadline: 11h 9/6/2016)
+	- Cài đặt (Start:23h 5/6/2016 Deadline: 23h 7/6/2016) - All
+	- Thử nghiệm và theo dõi server (Start: 23h 7/6/2016 - Deadline: 11h 9/6/2016) - A. Hà, A. Đức
+* Viết báo cáo (Start:23h 7/6/2016 Deadline: 12h 9/6/2016) - All
+
+---------------------------------------------------------------------
+Tuần tự I define interfae
+T1 Chuyển CSDL thành table chuẩn (A.Minh)
+T2 Tạo tập ứng viên K+1 từ tập K  ( Đức) và lấy tập phổ biến
+	T3 Loại bỏ ứng viên mà chứa bộ con ko phổ biến ( Hà)
+	T4 Loại set có support thấp hơn ngưỡng (cần tính độ support từ 1 tập) (Toàn)
+
+class Transaction{
+	private:
+		string id;
+		vector<string> items;
+	public:
+		string getId(){return id;}
+		vector<string> getItems(){return items;}
+};
+
+---------
+main.cpp
+
+
+vector<transaction> database;
+
+//T1
+vector<transaction> getDatabase(string path){
+
+}
+
+//T2
+vector<vector<string>> getItemSetK(...){
+
+}
+
+//T3
+vector<vector<string>> removeItemSet_NoSuppItemSet(vector<vector<string>> currentItemSetK)
+
+}
+
+//T4
+vector<vector<string>> removeItemSet(vector<vector<string>> currentItemSetK)
+
+
+vector<vector<string>> 
+
+
+
+
+
+
+
+
+
