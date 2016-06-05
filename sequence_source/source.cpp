@@ -45,7 +45,7 @@ vector< vector<string> > removeAllItemSet_BelowMinSupp(
 			
 			//check if the current transaction contains the current itemset
 			vector<string> currentTransaction = (database[j].getItemSet());
-			bool isOk = true; 
+			bool isOk = true;//true: the transaction contains the itemset - false: the transaction doesn't contains the itemset
 			for(int k = 0; k < curSet->size(); k++){
 				bool isContain = false;
 				
