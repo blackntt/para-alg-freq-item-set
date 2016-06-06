@@ -1,3 +1,7 @@
+#include <vector>
+#include <string>
+using namespace std;
+
 class Transaction{
     private:
         string id;
