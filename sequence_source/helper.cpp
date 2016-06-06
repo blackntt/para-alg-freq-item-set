@@ -30,7 +30,7 @@ class TeamHelper {
           }
           vector<string> items;
           vector< std::vector<string> > transaction;
-          ifstream myfile(filepath);
+          ifstream myfile(filepath.c_str());
           if(!myfile){
               cout << "Error opening output file" << endl;
               return database;
