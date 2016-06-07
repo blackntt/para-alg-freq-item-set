@@ -6,7 +6,7 @@ using namespace std;
 
 //Global database
 vector< Transaction > database;
-
+vector< vector<string> > frequentSet; 
 //set minSup
 int minSup;
 
@@ -60,6 +60,87 @@ vector< vector<string> > removeAllItemSet_BelowMinSupp(
 	return result;
 }
 
+//DUCDM create large item set with one element
+vector< vector<string> > getL1FromDatabase()
+{
+	set <string> C1;
+	for (int j = 0; j < database.size(); j++)
+	{
+		vector<string> trans = (database[j].getItemSet());
+		for(int i = 0; i < trans.size(); i++)
+		{
+			C1.insert(trans.at(i));
+		}
+	}
+	vector< vector<string> > c1Vector;
+	set<string>::iterator it;
+  	for (it = C1.begin() ; it != C1.end(); it++ )
+	{
+		vector<string> temp;
+		temp.push_back(*it);
+		c1Vector.push_back(temp);
+	}
+	return removeAllItemSet_BelowMinSupp(c1Vector);
+}
+
+//DUCDM gen Large Item from Item Set K element
+vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
+{
+	vector< vector<string> > result;
+	long k = largeItemSetK.at(0).size();
+	for(int i = 0; i < k; i++)
+	{
+		for(int j = 1; j < k; j++) 
+		{
+			vector<string> l1 = largeItemSetK.at(i);
+			//Add to frequent set (Global)
+			frequentSet.push_back(l1);
+			vector<string> l2 = largeItemSetK.at(j);
+			bool haveSamePrefix = true;
+			for(int t = 0; t < (k-1); t++) 
+			{
+				if(l1.at(t) != l2.at(t))
+				{
+					haveSamePrefix = false;
+					break;
+					
+				}
+			}
+			
+			if(haveSamePrefix) 
+			{
+				if(l1.at(k-1).compare(l2.at(k-1)) != 0) 
+				{
+					vector<string> temp = l1;
+					temp.push_back(l2.at(k-1));
+					//call to Ha (temp.push_back(l2.at(k-1)), largeItemSetK)
+					result.push_back(temp);
+				}
+			}
+		}
+	}
+	return result;
+}
+
+bool hasInFrequentSubset(vector<string> &c, vector< vector<string> > largeItemSetK){
+	long k = largeItemSetK.at(0).size();
+	bool existInFrenquent = false;
+	int count;
+	for(int i = 0; i < k; i++){
+		count = 0;
+		vector<string> itemSet = largeItemSetK.get(i);
+		for(int j = 0; j < itemSet.size(); j++){
+			if(c.contains(itemSet.at(j))){
+				count++;
+				if(count == k)
+					return true;
+			}else{
+				break;
+			}
+				
+		}
+	}
+}
 //testing main
 int main(int argc, char* argv[]){
 	
