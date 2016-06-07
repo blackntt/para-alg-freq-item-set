@@ -236,24 +236,6 @@ int main(int argc, char* argv[]){
 	minSup = 3;
 	//to find frequent item set
 	
-	/* HaHV: Test function isHasInFrequentSubset
-	vector<string> ck_plus_1 = split("A B C D",' ');
-
-	vector< vector<string> >  largeItemSetK;
-	vector<string> itemSetK1 = split("A B C",' ');
-	vector<string> itemSetK2 = split("B C D",' ');
-	vector<string> itemSetK3 = split("A C D",' ');
-	//vector<string> itemSetK4 = split("A B D",' ');
-
-	largeItemSetK.push_back (itemSetK1);
-	largeItemSetK.push_back (itemSetK2);
-	largeItemSetK.push_back (itemSetK3);
-	//largeItemSetK.push_back (itemSetK4);
-
-	bool isHasInFrequentSubset = hasInFrequentSubset(ck_plus_1, largeItemSetK);
-
-	cout<<isHasInFrequentSubset<<endl;
-*/
 	
 	return 0;
 }
