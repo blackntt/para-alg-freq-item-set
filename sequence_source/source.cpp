@@ -1,6 +1,8 @@
 #include <vector>
+#include <set>
 #include <string>
 #include <iostream>
+
 #include "helper.cpp"
 using namespace std;
 
@@ -83,6 +85,78 @@ vector< vector<string> > getL1FromDatabase()
 	return removeAllItemSet_BelowMinSupp(c1Vector);
 }
 
+// HaHV: get subset recursion function
+void getSubsets(vector<string> superSet, int k, int idx, set<string>* current,vector< vector<string> >* solution) {
+    //successful stop clause
+    if ((*current).size() == k) {
+		vector<string> temp(k);
+		std::copy((*current).begin(), (*current).end(), temp.begin());
+		(*solution).push_back(temp);
+        return;
+    }
+    //unseccessful stop clause
+    if (idx == superSet.size()) return;
+	string x = superSet.at(idx);
+	(*current).insert(x);
+    //"guess" x is in the subset
+    getSubsets(superSet, k, idx+1, current, solution);
+	(*current).erase(x);
+    //"guess" x is not in the subset
+    getSubsets(superSet, k, idx+1, current, solution);
+}
+
+// get k-subset of superset with (k+1) elements
+vector< vector<string> >* getSubsets(const vector<string>& superSet, int k) {
+    vector< vector<string> > *res = new vector< vector<string> >();
+	set<string> *current = new set<string>();
+
+	getSubsets(superSet, k, 0, current, res);
+
+	delete current;
+
+    return res;
+}
+
+//check if any k-subset doesn't exist in L(k)
+bool hasInFrequentSubset(const vector<string> &candidateSetKplus1, vector< vector<string> >& largeItemSetK)
+{
+	long k = candidateSetKplus1.size() - 1;
+
+	//get all k-item-subsets of  C(k+1)
+	vector< vector<string> >* subsets = getSubsets(candidateSetKplus1, k);
+
+	bool result = false;
+
+	//check if any k-subset doesn't exist in L(k)
+	for(int i = 0; i < (*subsets).size(); i++) {
+		
+		vector<string> sub = (*subsets).at(i);
+
+		bool foundSubInLK = false;
+
+		for(int j = 0; j < largeItemSetK.size(); j++) {
+
+			vector<string> kItemSet = largeItemSetK.at(j);
+			if(sub == kItemSet) {
+			
+				foundSubInLK = true;
+				break;
+			}
+		}
+
+		// k-subitem doest exists in Lk
+		if(foundSubInLK == false) {
+			
+			result = true;
+			break;
+		} 
+	}
+
+	delete subsets;
+
+	return result;
+}
+
 //DUCDM gen Large Item from Item Set K element
 vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 {
@@ -113,8 +187,11 @@ vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 				{
 					vector<string> temp = l1;
 					temp.push_back(l2.at(k-1));
-					//call to Ha (temp.push_back(l2.at(k-1)), largeItemSetK)
-					result.push_back(temp);
+					bool isInValid = hasInFrequentSubset(temp, largeItemSetK);
+					if(!isInValid) 
+					{
+						result.push_back(temp);
+					}
 				}
 			}
 		}
@@ -122,25 +199,33 @@ vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 	return result;
 }
 
-bool hasInFrequentSubset(vector<string> &c, vector< vector<string> > largeItemSetK){
-	long k = largeItemSetK.at(0).size();
-	bool existInFrenquent = false;
-	int count;
-	for(int i = 0; i < k; i++){
-		count = 0;
-		vector<string> itemSet = largeItemSetK.get(i);
-		for(int j = 0; j < itemSet.size(); j++){
-			if(c.contains(itemSet.at(j))){
-				count++;
-				if(count == k)
-					return true;
-			}else{
-				break;
-			}
-				
-		}
-	}
+//for test
+template<typename T>
+ostream& operator<< (ostream& out, const vector<T>& v) {
+    out << "[";
+    size_t last = v.size() - 1;
+    for(size_t i = 0; i < v.size(); ++i) {
+        out << v[i];
+        if (i != last) 
+            out << ", ";
+    }
+    out << "]";
+    return out;
 }
+
+// You could also take an existing vector as a parameter.
+vector<string> split(string str, char delimiter) {
+  vector<string> internal;
+  stringstream ss(str); // Turn the string into a stream.
+  string tok;
+  
+  while(getline(ss, tok, delimiter)) {
+    internal.push_back(tok);
+  }
+  
+  return internal;
+}
+
 //testing main
 int main(int argc, char* argv[]){
 	
@@ -150,6 +235,25 @@ int main(int argc, char* argv[]){
 	//set minSup
 	minSup = 3;
 	//to find frequent item set
+	
+	/* HaHV: Test function isHasInFrequentSubset
+	vector<string> ck_plus_1 = split("A B C D",' ');
+
+	vector< vector<string> >  largeItemSetK;
+	vector<string> itemSetK1 = split("A B C",' ');
+	vector<string> itemSetK2 = split("B C D",' ');
+	vector<string> itemSetK3 = split("A C D",' ');
+	//vector<string> itemSetK4 = split("A B D",' ');
+
+	largeItemSetK.push_back (itemSetK1);
+	largeItemSetK.push_back (itemSetK2);
+	largeItemSetK.push_back (itemSetK3);
+	//largeItemSetK.push_back (itemSetK4);
+
+	bool isHasInFrequentSubset = hasInFrequentSubset(ck_plus_1, largeItemSetK);
+
+	cout<<isHasInFrequentSubset<<endl;
+*/
 	
 	return 0;
 }
