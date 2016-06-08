@@ -2,6 +2,7 @@
 #include <set>
 #include <string>
 #include <iostream>
+#include <sys/time.h>
 
 #include "helper.cpp"
 using namespace std;
@@ -184,7 +185,6 @@ vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 				{
 					vector<string> temp = l1;
 					temp.push_back(l2.at(k-1));
-					//cout<< "Call to Ha++ \n";
 					bool isInValid = hasInFrequentSubset(temp, largeItemSetK);
 					if(!isInValid) 
 					{
@@ -194,7 +194,6 @@ vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 			}
 		}
 	}
-	cout<< "Call to Toan++ \n";
 	return removeAllItemSet_BelowMinSupp(result);
 
 }
@@ -222,21 +221,19 @@ int main(int argc, char* argv[]){
 	
 	//set minSup
 	minSup = 3;
+	
+	struct timeval benchmark;
+	gettimeofday(&benchmark, NULL);	
+	long startTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
 	//to find frequent item set
 	vector< vector<string> > L1 = getL1FromDatabase();
-	vector< vector<string> > result;
 	while(L1.size() > 0)
 	{
 		L1 = aprioriGen(L1);
-		cout<<"L++ \n";
-	}
-	for(int i = 0; i < frequentSet.size(); i++){
-		vector<string> temp = frequentSet.at(i);
-		for(int j = 0; j < temp.size(); j++){
-			cout<< temp.at(j) << "-";
-		}
-		cout<<"\n";
-	}
+	}	
+	gettimeofday(&benchmark, NULL);
+	long endTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
 	
+	cout<<"Time to run: "<<endTime - startTime<<"ms";
 	return 0;
 }
