@@ -2,6 +2,7 @@
 #include <set>
 #include <string>
 #include <iostream>
+#include <sys/time.h>
 
 #include "helper.cpp"
 using namespace std;
@@ -11,7 +12,6 @@ vector< Transaction > database;
 vector< vector<string> > frequentSet; 
 //set minSup
 int minSup;
-
 
 //function for remove all item sets lower than the minsup
 vector< vector<string> > removeAllItemSet_BelowMinSupp(
@@ -57,8 +57,6 @@ vector< vector<string> > removeAllItemSet_BelowMinSupp(
 		if(count >= minSup)
 			result.push_back(*curSet);		
 	}
-	
-	
 	return result;
 }
 
@@ -161,14 +159,15 @@ bool hasInFrequentSubset(const vector<string> &candidateSetKplus1, vector< vecto
 vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 {
 	vector< vector<string> > result;
-	long k = largeItemSetK.at(0).size();
-	for(int i = 0; i < k; i++)
+	int size = largeItemSetK.size();
+	int k = largeItemSetK.at(0).size();
+	for(int i = 0; i < size; i++)
 	{
-		for(int j = 1; j < k; j++) 
+		//Add to frequent set (Global)
+		frequentSet.push_back(largeItemSetK.at(i));
+		for(int j = 1; j < size; j++) 
 		{
 			vector<string> l1 = largeItemSetK.at(i);
-			//Add to frequent set (Global)
-			frequentSet.push_back(l1);
 			vector<string> l2 = largeItemSetK.at(j);
 			bool haveSamePrefix = true;
 			for(int t = 0; t < (k-1); t++) 
@@ -180,7 +179,6 @@ vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 					
 				}
 			}
-			
 			if(haveSamePrefix) 
 			{
 				if(l1.at(k-1).compare(l2.at(k-1)) != 0) 
@@ -196,7 +194,8 @@ vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 			}
 		}
 	}
-	return result;
+	return removeAllItemSet_BelowMinSupp(result);
+
 }
 
 //for test
@@ -213,18 +212,6 @@ ostream& operator<< (ostream& out, const vector<T>& v) {
     return out;
 }
 
-// You could also take an existing vector as a parameter.
-vector<string> split(string str, char delimiter) {
-  vector<string> internal;
-  stringstream ss(str); // Turn the string into a stream.
-  string tok;
-  
-  while(getline(ss, tok, delimiter)) {
-    internal.push_back(tok);
-  }
-  
-  return internal;
-}
 
 //testing main
 int main(int argc, char* argv[]){
@@ -234,8 +221,19 @@ int main(int argc, char* argv[]){
 	
 	//set minSup
 	minSup = 3;
+	
+	struct timeval benchmark;
+	gettimeofday(&benchmark, NULL);	
+	long startTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
 	//to find frequent item set
+	vector< vector<string> > L1 = getL1FromDatabase();
+	while(L1.size() > 0)
+	{
+		L1 = aprioriGen(L1);
+	}	
+	gettimeofday(&benchmark, NULL);
+	long endTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
 	
-	
+	cout<<"Time to run: "<<endTime - startTime<<"ms";
 	return 0;
 }
