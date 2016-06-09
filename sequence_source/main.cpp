@@ -217,7 +217,7 @@ ostream& operator<< (ostream& out, const vector<T>& v) {
 int main(int argc, char* argv[]){
 
 	//read database
-	database = TeamHelper::getDatabase("../datasource/10k.txt");
+	database = TeamHelper::getDatabase("../datasource/5k.txt");
 
 	//set minSup
 	minSup = 3;
