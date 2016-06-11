@@ -217,7 +217,7 @@ ostream& operator<< (ostream& out, const vector<T>& v) {
 int main(int argc, char* argv[]){
 
 	//read database
-	database = TeamHelper::getDatabase("../datasource/10k.txt");
+	database = TeamHelper::getDatabase("../datasource/test.txt");
 
 	//set minSup
 	minSup = 3;
@@ -234,9 +234,9 @@ int main(int argc, char* argv[]){
 	gettimeofday(&benchmark, NULL);
 	long endTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
 	ofstream outFile;
-  outFile.open ("result_10k.txt");
-  outFile << (endTime - startTime) <<"ms";
-  outFile.close();
+  	outFile.open ("result_10k.txt");
+  	outFile << (endTime - startTime) <<"ms";
+  	outFile.close();
 	cout<<"Time to run: "<<endTime - startTime<<"ms" << endl;
 	return 0;
 }
