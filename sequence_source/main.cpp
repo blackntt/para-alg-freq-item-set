@@ -83,34 +83,29 @@ vector< vector<string> > getL1FromDatabase()
 	return removeAllItemSet_BelowMinSupp(c1Vector);
 }
 
-// HaHV: get subset recursion function
-void getSubsets(vector<string> superSet, int k, int idx, set<string>* current,vector< vector<string> >* solution) {
-    //successful stop clause
-    if ((*current).size() == k) {
-		vector<string> temp(k);
-		std::copy((*current).begin(), (*current).end(), temp.begin());
-		(*solution).push_back(temp);
-        return;
-    }
-    //unseccessful stop clause
-    if (idx == superSet.size()) return;
-	string x = superSet.at(idx);
-	(*current).insert(x);
-    //"guess" x is in the subset
-    getSubsets(superSet, k, idx+1, current, solution);
-	(*current).erase(x);
-    //"guess" x is not in the subset
-    getSubsets(superSet, k, idx+1, current, solution);
-}
-
 // get k-subset of superset with (k+1) elements
 vector< vector<string> >* getSubsets(const vector<string>& superSet, int k) {
-    vector< vector<string> > *res = new vector< vector<string> >();
-	set<string> *current = new set<string>();
+    
+	vector< vector<string> > *res = new vector< vector<string> >();
 
-	getSubsets(superSet, k, 0, current, res);
+	// k-subset will be generate by selecting k in total (k+1) elements in superSet
+	for (int i = 0; i < superSet.size(); i++) 
+	{
+		vector<string> tempKsubset;
+		//eliminate an element to create a k-subset.
+		for (int j = 0; j < superSet.size(); j++) 
+		{
+			if (i == j)
+			{
+				continue;
+			} else 
+			{
+				tempKsubset.push_back(superSet.at(j));
+			}
+		}
 
-	delete current;
+		(*res).push_back(tempKsubset);
+	}
 
     return res;
 }
@@ -205,7 +200,7 @@ ostream& operator<< (ostream& out, const vector<T>& v) {
     size_t last = v.size() - 1;
     for(size_t i = 0; i < v.size(); ++i) {
         out << v[i];
-        if (i != last)
+        if (i != last) 
             out << ", ";
     }
     out << "]";
