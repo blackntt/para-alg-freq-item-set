@@ -3,6 +3,8 @@
 #include <string>
 #include <iostream>
 #include <sys/time.h>
+#include <thread>
+#include <mutex>
 
 #include "helper.cpp"
 using namespace std;
@@ -110,7 +112,36 @@ vector< vector<string> >* getSubsets(const vector<string>& superSet, int k) {
     return res;
 }
 
-//check if any k-subset doesn't exist in L(k)
+
+
+//for lock and unlock
+std::mutex mu;
+void checkOneSubsetWithKItem(bool& totalResult, const vector<string> & sub, vector< vector<string> >& largeItemSetK) {
+
+	bool foundSubInLK = false;
+
+	for(int j = 0; j < largeItemSetK.size(); j++) {
+		if(totalResult == true) return;
+
+		vector<string> kItemSet = largeItemSetK.at(j);
+		if(sub == kItemSet) {
+
+			foundSubInLK = true;
+			break;
+		}
+	}
+
+	// k-subitem doest exists in Lk
+	if(foundSubInLK == false) {
+		mu.lock();
+		totalResult = true;
+		mu.unlock();
+
+		return;
+	}
+}
+
+//check if any k-subset doesn't exist in L(k) with parallel programming
 bool hasInFrequentSubset(const vector<string> &candidateSetKplus1, vector< vector<string> >& largeItemSetK)
 {
 	long k = candidateSetKplus1.size() - 1;
@@ -120,29 +151,14 @@ bool hasInFrequentSubset(const vector<string> &candidateSetKplus1, vector< vecto
 
 	bool result = false;
 
+	//vector<thread> threads;
+
 	//check if any k-subset doesn't exist in L(k)
 	for(int i = 0; i < (*subsets).size(); i++) {
 
 		vector<string> sub = (*subsets).at(i);
-
-		bool foundSubInLK = false;
-
-		for(int j = 0; j < largeItemSetK.size(); j++) {
-
-			vector<string> kItemSet = largeItemSetK.at(j);
-			if(sub == kItemSet) {
-
-				foundSubInLK = true;
-				break;
-			}
-		}
-
-		// k-subitem doest exists in Lk
-		if(foundSubInLK == false) {
-
-			result = true;
-			break;
-		}
+		thread subtask(&checkOneSubsetWithKItem,std::ref(result),std::ref(sub), std::ref(largeItemSetK));
+		subtask.join();
 	}
 
 	delete subsets;
@@ -160,7 +176,7 @@ vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 	{
 		//Add to frequent set (Global)
 		frequentSet.push_back(largeItemSetK.at(i));
-		for(int j = 1; j < size; j++)
+		for(int j = i+1; j < size; j++)
 		{
 			vector<string> l1 = largeItemSetK.at(i);
 			vector<string> l2 = largeItemSetK.at(j);
@@ -211,6 +227,7 @@ ostream& operator<< (ostream& out, const vector<T>& v) {
 //testing main
 int main(int argc, char* argv[]){
 
+	
 	//read database
 	database = TeamHelper::getDatabase("../datasource/test.txt");
 
@@ -233,5 +250,6 @@ int main(int argc, char* argv[]){
   	outFile << (endTime - startTime) <<"ms";
   	outFile.close();
 	cout<<"Time to run: "<<endTime - startTime<<"ms" << endl;
+
 	return 0;
 }
