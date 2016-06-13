@@ -177,7 +177,7 @@ vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 			}
 			if(haveSamePrefix)
 			{
-				if(l1.at(k-1).compare(l2.at(k-1)) < 0)
+				if(l1.at(k-1).compare(l2.at(k-1)) != 0)
 				{
 					vector<string> temp = l1;
 					temp.push_back(l2.at(k-1));
@@ -213,11 +213,11 @@ ostream& operator<< (ostream& out, const vector<T>& v) {
 int main(int argc, char* argv[]){
 
 	//read database
-	database = TeamHelper::getDatabase("../datasource/test.txt");
-
+	string file_name_input = argv[1];
+	string file_name_output = argv[2];
+	database = TeamHelper::getDatabase("../datasource/" + file_name_input);
 	//set minSup
 	minSup = 3;
-
 	struct timeval benchmark;
 	gettimeofday(&benchmark, NULL);
 	long startTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
@@ -227,14 +227,14 @@ int main(int argc, char* argv[]){
 	 while(L1.size() > 0)
 	 {
 	 	L1 = aprioriGen(L1);
-	 	cout<<"Step: "<< count_step++ << endl;
+	 	//cout<<"Step: "<< count_step++ << endl;
 	 }
 	gettimeofday(&benchmark, NULL);
 	long endTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
 	ofstream outFile;
-	outFile.open ("result_10k.txt");
+	outFile.open (file_name_output);
 	outFile << (endTime - startTime) <<"ms";
 	outFile.close();
-	cout<<"Time to run: "<<endTime - startTime<<"ms" << endl;
+	//cout << "Time to run: " << endTime - startTime << "ms" << endl;
 	return 0;
 }
