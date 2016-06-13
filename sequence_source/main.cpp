@@ -232,7 +232,7 @@ int main(int argc, char* argv[]){
 	gettimeofday(&benchmark, NULL);
 	long endTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
 	ofstream outFile;
-	outFile.open (file_name_output);
+	outFile.open (file_name_output.c_str());
 	outFile << (endTime - startTime) <<"ms";
 	outFile.close();
 	//cout << "Time to run: " << endTime - startTime << "ms" << endl;
