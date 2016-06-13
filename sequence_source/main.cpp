@@ -83,58 +83,6 @@ vector< vector<string> > getL1FromDatabase()
 	return removeAllItemSet_BelowMinSupp(c1Vector);
 }
 
-//DUCDM create large item set with one element
-void getL1Parallel(vector< Transaction > db, vector <string> &result)
-{
-	for (int j = 0; j < db.size(); j++)
-	{
-		vector<string> trans = (db.at(j).getItemSet());
-		for(int i = 0; i < trans.size(); i++)
-		{
-			result.push_back(trans.at(i));
-		}
-	}
-}
-//DUCDM create large item set with one element
-vector< vector<string> > getL1FromDatabaseUsingParallel()
-{
-	int subSize = database.size()/numOfCPU;
-	vector<Transaction> dataSubSets[numOfCPU];
-	vector <string> results[numOfCPU];
-	int j=0;
-	
-	for(int i=0;i<numOfCPU;i++){
-		int curMaxIndex = i*subSize+subSize;
-		if(curMaxIndex < database.size())
-			curMaxIndex = database.size();
-		for(;j<curMaxIndex;j++)
-			dataSubSets[i].push_back(database.at(j));
-	}
-	vector< thread > threads;
-	for(int i=0; i<numOfCPU; i++){
-		threads.push_back(thread(&getL1Parallel, dataSubSets[i], std::ref(results[i])));
-	}
-	
-	for(int i=0;i<numOfCPU;i++){
-		threads[i].join();
-	}
-	set <string> C1;
-	for(int i=0;i<numOfCPU;i++){
-		for(j=0;j<results[i].size();j++){
-			C1.insert((results[i]).at(j));
-		}
-	}
-	vector< vector<string> > c1Vector;
-	set<string>::iterator it;
-  	for (it = C1.begin() ; it != C1.end(); it++ )
-	{
-		vector<string> temp;
-		temp.push_back(*it);
-		c1Vector.push_back(temp);
-	}
-	return removeAllItemSet_BelowMinSupp(c1Vector);
-}
-
 // HaHV: get subset recursion function
 void getSubsets(vector<string> superSet, int k, int idx, set<string>* current,vector< vector<string> >* solution) {
     //successful stop clause
@@ -217,7 +165,7 @@ vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 	{
 		//Add to frequent set (Global)
 		frequentSet.push_back(largeItemSetK.at(i));
-		for(int j = i+1; j < size; j++)
+		for(int j = i+1; j < size; j++)//fix loop
 		{
 			vector<string> l1 = largeItemSetK.at(i);
 			vector<string> l2 = largeItemSetK.at(j);
