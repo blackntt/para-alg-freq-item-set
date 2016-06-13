@@ -86,20 +86,20 @@ vector< vector<string> > getL1FromDatabase()
 
 // get k-subset of superset with (k+1) elements
 vector< vector<string> >* getSubsets(const vector<string>& superSet, int k) {
-    
+
 	vector< vector<string> > *res = new vector< vector<string> >();
 
 	// k-subset will be generate by selecting k in total (k+1) elements in superSet
-	for (int i = 0; i < superSet.size(); i++) 
+	for (int i = 0; i < superSet.size(); i++)
 	{
 		vector<string> tempKsubset;
 		//eliminate an element to create a k-subset.
-		for (int j = 0; j < superSet.size(); j++) 
+		for (int j = 0; j < superSet.size(); j++)
 		{
 			if (i == j)
 			{
 				continue;
-			} else 
+			} else
 			{
 				tempKsubset.push_back(superSet.at(j));
 			}
@@ -161,7 +161,7 @@ vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 	{
 		//Add to frequent set (Global)
 		frequentSet.push_back(largeItemSetK.at(i));
-		for(int j = 1; j < size; j++)
+		for(int j = i + 1; j < size; j++)
 		{
 			vector<string> l1 = largeItemSetK.at(i);
 			vector<string> l2 = largeItemSetK.at(j);
