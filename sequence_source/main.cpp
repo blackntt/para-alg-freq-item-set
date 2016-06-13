@@ -222,10 +222,12 @@ int main(int argc, char* argv[]){
 	gettimeofday(&benchmark, NULL);
 	long startTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
 	// //to find frequent item set
+	var int count_step = 1;
 	vector< vector<string> > L1 = getL1FromDatabase();
 	 while(L1.size() > 0)
 	 {
 	 	L1 = aprioriGen(L1);
+	 	cout<<"Step: "<< count_step++ << endl;
 	 }
 	gettimeofday(&benchmark, NULL);
 	long endTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
