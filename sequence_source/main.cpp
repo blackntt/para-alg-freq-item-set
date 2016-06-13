@@ -165,7 +165,7 @@ vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 	{
 		//Add to frequent set (Global)
 		frequentSet.push_back(largeItemSetK.at(i));
-		for(int j = i; j < size; j++)//fix loop
+		for(int j = i+1; j < size; j++)//fix loop
 		{
 			vector<string> l1 = largeItemSetK.at(i);
 			vector<string> l2 = largeItemSetK.at(j);
