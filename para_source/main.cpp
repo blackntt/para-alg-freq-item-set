@@ -5,6 +5,7 @@
 #include <sys/time.h>
 
 #include "helper.cpp"
+#include <thread>
 using namespace std;
 
 //Global database
@@ -13,11 +14,13 @@ vector< vector<string> > frequentSet;
 //set minSup
 int minSup;
 
-//function for remove all item sets lower than the minsup
-vector< vector<string> > removeAllItemSet_BelowMinSupp(
-	vector< vector<string> > itemSets){
+const int numOfCPU = 2;
 
-	vector< vector<string> > result;
+
+void removeAllItemSet_BelowMinSupp_para_unit(
+	vector< vector<string> > itemSets,
+	vector< vector<string> > &result
+	){
 
 	for(int i = 0;i < itemSets.size();i++){
 
@@ -57,7 +60,47 @@ vector< vector<string> > removeAllItemSet_BelowMinSupp(
 		if(count >= minSup)
 			result.push_back(*curSet);
 	}
-	return result;
+}
+
+
+//function for remove all item sets lower than the minsup
+vector< vector<string> > removeAllItemSet_BelowMinSupp(
+	vector< vector<string> > itemSets){
+	
+	
+	vector< vector<string> > finalResults;
+	
+	int subSize = itemSets.size()/numOfCPU;
+	
+	vector< vector<string> > subSets[numOfCPU];
+	vector< vector<string> > results[numOfCPU];
+	
+	int j=0;
+	for(int i=0;i<numOfCPU;i++){
+		
+		int curMaxIndex = i*subSize+subSize;
+		if(curMaxIndex<itemSets.size())
+			curMaxIndex = itemSets.size();
+		for(;j<curMaxIndex;j++)
+			subSets[i].push_back(itemSets[j]);
+	}
+	vector< thread > threads;
+	for(int i=0;i<numOfCPU;i++){
+		threads.push_back(thread(removeAllItemSet_BelowMinSupp_para_unit,subSets[i],std::ref(results[i])));
+	}
+	
+	for(int i=0;i<numOfCPU;i++){
+		threads[i].join();
+	}
+	
+	for(int i=0;i<numOfCPU;i++){
+		for(j=0;j<results[i].size();j++){
+			finalResults.push_back((results[i]).at(j));
+		}
+	}
+
+	return finalResults;
+	
 }
 
 //DUCDM create large item set with one element
@@ -70,58 +113,6 @@ vector< vector<string> > getL1FromDatabase()
 		for(int i = 0; i < trans.size(); i++)
 		{
 			C1.insert(trans.at(i));
-		}
-	}
-	vector< vector<string> > c1Vector;
-	set<string>::iterator it;
-  	for (it = C1.begin() ; it != C1.end(); it++ )
-	{
-		vector<string> temp;
-		temp.push_back(*it);
-		c1Vector.push_back(temp);
-	}
-	return removeAllItemSet_BelowMinSupp(c1Vector);
-}
-
-//DUCDM create large item set with one element
-void getL1Parallel(vector< Transaction > db, vector <string> &result)
-{
-	for (int j = 0; j < db.size(); j++)
-	{
-		vector<string> trans = (db.at(j).getItemSet());
-		for(int i = 0; i < trans.size(); i++)
-		{
-			result.push_back(trans.at(i));
-		}
-	}
-}
-//DUCDM create large item set with one element
-vector< vector<string> > getL1FromDatabaseUsingParallel()
-{
-	int subSize = database.size()/numOfCPU;
-	vector<Transaction> dataSubSets[numOfCPU];
-	vector <string> results[numOfCPU];
-	int j=0;
-	
-	for(int i=0;i<numOfCPU;i++){
-		int curMaxIndex = i*subSize+subSize;
-		if(curMaxIndex < database.size())
-			curMaxIndex = database.size();
-		for(;j<curMaxIndex;j++)
-			dataSubSets[i].push_back(database.at(j));
-	}
-	vector< thread > threads;
-	for(int i=0; i<numOfCPU; i++){
-		threads.push_back(thread(&getL1Parallel, dataSubSets[i], std::ref(results[i])));
-	}
-	
-	for(int i=0;i<numOfCPU;i++){
-		threads[i].join();
-	}
-	set <string> C1;
-	for(int i=0;i<numOfCPU;i++){
-		for(j=0;j<results[i].size();j++){
-			C1.insert((results[i]).at(j));
 		}
 	}
 	vector< vector<string> > c1Vector;
@@ -217,7 +208,7 @@ vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 	{
 		//Add to frequent set (Global)
 		frequentSet.push_back(largeItemSetK.at(i));
-		for(int j = i+1; j < size; j++)
+		for(int j = 1; j < size; j++)
 		{
 			vector<string> l1 = largeItemSetK.at(i);
 			vector<string> l2 = largeItemSetK.at(j);
@@ -269,7 +260,7 @@ ostream& operator<< (ostream& out, const vector<T>& v) {
 int main(int argc, char* argv[]){
 
 	//read database
-	database = TeamHelper::getDatabase("../datasource/test.txt");
+	database = TeamHelper::getDatabase("../datasource/10k.txt");
 
 	//set minSup
 	minSup = 3;
@@ -277,7 +268,7 @@ int main(int argc, char* argv[]){
 	struct timeval benchmark;
 	gettimeofday(&benchmark, NULL);
 	long startTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
-	// //to find frequent item set
+	//to find frequent item set
 	vector< vector<string> > L1 = getL1FromDatabase();
 	 while(L1.size() > 0)
 	 {
