@@ -177,7 +177,7 @@ vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 			}
 			if(haveSamePrefix)
 			{
-				if(l1.at(k-1).compare(l2.at(k-1)) != 0)
+				if(l1.at(k-1).compare(l2.at(k-1)) < 0)
 				{
 					vector<string> temp = l1;
 					temp.push_back(l2.at(k-1));
