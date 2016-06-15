@@ -52,6 +52,9 @@ class TeamHelper {
                   item_tmp.push_back(items[1]);
               }
           }
+          if (database.size() == 0) {
+            cout << "Database is empty" << endl;
+          }
           return database;
         }
 };
