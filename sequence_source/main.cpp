@@ -212,7 +212,7 @@ ostream& operator<< (ostream& out, const vector<T>& v) {
 //testing main
 int main(int argc, char* argv[]){
 
-	for (int r = 1; r <= 6; r++) {
+	for (int r = 1; r <= 7; r++) {
 		//read database
 		string s_r = to_string(r);
 		string file_name_input = "../datasource/" + s_r + ".txt";
