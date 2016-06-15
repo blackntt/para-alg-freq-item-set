@@ -214,8 +214,8 @@ int main(int argc, char* argv[]){
 
 	for (int r = 1; r <= 5; r++) {
 		//read database
-		string file_name_input = i + "k.txt";
-		string file_name_output = i + "_result.txt";;
+		string file_name_input = r + "k.txt";
+		string file_name_output = r + "_result.txt";;
 		database = TeamHelper::getDatabase("../datasource/" + file_name_input);
 		//set minSup
 		minSup = 3;
