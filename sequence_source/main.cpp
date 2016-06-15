@@ -216,7 +216,7 @@ int main(int argc, char* argv[]){
 		//read database
 		string s_r = to_string(r);
 		string file_name_input = "../datasource/" + s_r + "k.txt";
-		cout<< file_name_input << endl;
+		//cout<< file_name_input << endl;
 		string file_name_output = s_r + "_result.txt";;
 		database = TeamHelper::getDatabase(file_name_input);
 		//set minSup
@@ -230,7 +230,7 @@ int main(int argc, char* argv[]){
 		 while(L1.size() > 0)
 		 {
 		 	L1 = aprioriGen(L1);
-		 	cout<<"Step: "<< count_step++ << endl;
+		 	//cout<<"Step: "<< count_step++ << endl;
 		 }
 		gettimeofday(&benchmark, NULL);
 		long endTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
