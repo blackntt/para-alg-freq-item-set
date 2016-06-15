@@ -212,29 +212,32 @@ ostream& operator<< (ostream& out, const vector<T>& v) {
 //testing main
 int main(int argc, char* argv[]){
 
-	//read database
-	string file_name_input = argv[1];
-	string file_name_output = argv[2];
-	database = TeamHelper::getDatabase("../datasource/" + file_name_input);
-	//set minSup
-	minSup = 3;
-	struct timeval benchmark;
-	gettimeofday(&benchmark, NULL);
-	long startTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
-	// //to find frequent item set
-	int count_step = 1;
-	vector< vector<string> > L1 = getL1FromDatabase();
-	 while(L1.size() > 0)
-	 {
-	 	L1 = aprioriGen(L1);
-	 	//cout<<"Step: "<< count_step++ << endl;
-	 }
-	gettimeofday(&benchmark, NULL);
-	long endTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
-	ofstream outFile;
-	outFile.open (file_name_output.c_str());
-	outFile << (endTime - startTime) <<"ms";
-	outFile.close();
+	for (int r = 1; r <= 5; r++) {
+		//read database
+		string file_name_input = i + "k.txt";
+		string file_name_output = i + "_result.txt";;
+		database = TeamHelper::getDatabase("../datasource/" + file_name_input);
+		//set minSup
+		minSup = 3;
+		struct timeval benchmark;
+		gettimeofday(&benchmark, NULL);
+		long startTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
+		// //to find frequent item set
+		int count_step = 1;
+		vector< vector<string> > L1 = getL1FromDatabase();
+		 while(L1.size() > 0)
+		 {
+		 	L1 = aprioriGen(L1);
+		 	//cout<<"Step: "<< count_step++ << endl;
+		 }
+		gettimeofday(&benchmark, NULL);
+		long endTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
+		ofstream outFile;
+		outFile.open (file_name_output.c_str());
+		outFile << (endTime - startTime) <<"ms";
+		outFile.close();
+	}
+
 	//cout << "Time to run: " << endTime - startTime << "ms" << endl;
 	return 0;
 }
