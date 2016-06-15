@@ -104,15 +104,44 @@ vector< vector<string> > removeAllItemSet_BelowMinSupp(
 }
 
 //DUCDM create large item set with one element
-vector< vector<string> > getL1FromDatabase()
+void getL1Parallel(vector< Transaction > db, vector <string> &result)
 {
-	set <string> C1;
-	for (int j = 0; j < database.size(); j++)
+	for (int j = 0; j < db.size(); j++)
 	{
-		vector<string> trans = (database[j].getItemSet());
+		vector<string> trans = (db.at(j).getItemSet());
 		for(int i = 0; i < trans.size(); i++)
 		{
-			C1.insert(trans.at(i));
+			result.push_back(trans.at(i));
+		}
+	}
+}
+//DUCDM create large item set with one element
+vector< vector<string> > getL1FromDatabase()
+{
+	int subSize = database.size()/numOfCPU;
+	vector<Transaction> dataSubSets[numOfCPU];
+	vector <string> results[numOfCPU];
+	int j=0;
+	
+	for(int i=0;i<numOfCPU;i++){
+		int curMaxIndex = i*subSize+subSize;
+		if(curMaxIndex < database.size())
+			curMaxIndex = database.size();
+		for(;j<curMaxIndex;j++)
+			dataSubSets[i].push_back(database.at(j));
+	}
+	vector< thread > threads;
+	for(int i=0; i<numOfCPU; i++){
+		threads.push_back(thread(&getL1Parallel, dataSubSets[i], std::ref(results[i])));
+	}
+	
+	for(int i=0;i<numOfCPU;i++){
+		threads[i].join();
+	}
+	set <string> C1;
+	for(int i=0;i<numOfCPU;i++){
+		for(j=0;j<results[i].size();j++){
+			C1.insert((results[i]).at(j));
 		}
 	}
 	vector< vector<string> > c1Vector;
@@ -208,7 +237,7 @@ vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 	{
 		//Add to frequent set (Global)
 		frequentSet.push_back(largeItemSetK.at(i));
-		for(int j = 1; j < size; j++)
+		for(int j = i+1; j < size; j++)
 		{
 			vector<string> l1 = largeItemSetK.at(i);
 			vector<string> l2 = largeItemSetK.at(j);
