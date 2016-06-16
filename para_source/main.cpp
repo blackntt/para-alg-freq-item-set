@@ -66,18 +66,18 @@ void removeAllItemSet_BelowMinSupp_para_unit(
 //function for remove all item sets lower than the minsup
 vector< vector<string> > removeAllItemSet_BelowMinSupp(
 	vector< vector<string> > itemSets){
-	
-	
+
+
 	vector< vector<string> > finalResults;
-	
+
 	int subSize = itemSets.size()/numOfCPU;
-	
+
 	vector< vector<string> > subSets[numOfCPU];
 	vector< vector<string> > results[numOfCPU];
-	
+
 	int j=0;
 	for(int i=0;i<numOfCPU;i++){
-		
+
 		int curMaxIndex = i*subSize+subSize;
 		if(curMaxIndex<itemSets.size())
 			curMaxIndex = itemSets.size();
@@ -88,11 +88,11 @@ vector< vector<string> > removeAllItemSet_BelowMinSupp(
 	for(int i=0;i<numOfCPU;i++){
 		threads.push_back(thread(removeAllItemSet_BelowMinSupp_para_unit,subSets[i],std::ref(results[i])));
 	}
-	
+
 	for(int i=0;i<numOfCPU;i++){
 		threads[i].join();
 	}
-	
+
 	for(int i=0;i<numOfCPU;i++){
 		for(j=0;j<results[i].size();j++){
 			finalResults.push_back((results[i]).at(j));
@@ -100,7 +100,7 @@ vector< vector<string> > removeAllItemSet_BelowMinSupp(
 	}
 
 	return finalResults;
-	
+
 }
 
 //DUCDM create large item set with one element
@@ -122,7 +122,7 @@ vector< vector<string> > getL1FromDatabase()
 	vector<Transaction> dataSubSets[numOfCPU];
 	vector <string> results[numOfCPU];
 	int j=0;
-	
+
 	for(int i=0;i<numOfCPU;i++){
 		int curMaxIndex = i*subSize+subSize;
 		if(curMaxIndex < database.size())
@@ -134,7 +134,7 @@ vector< vector<string> > getL1FromDatabase()
 	for(int i=0; i<numOfCPU; i++){
 		threads.push_back(thread(&getL1Parallel, dataSubSets[i], std::ref(results[i])));
 	}
-	
+
 	for(int i=0;i<numOfCPU;i++){
 		threads[i].join();
 	}
@@ -288,27 +288,438 @@ ostream& operator<< (ostream& out, const vector<T>& v) {
 //testing main
 int main(int argc, char* argv[]){
 
-	//read database
-	database = TeamHelper::getDatabase("../datasource/10k.txt");
+	Last login: Wed Jun 15 08:57:53 on ttys004
+You have new mail.
+MinhVN:sequence_source MinhVN$ ssh ubuntu@192.168.20.201
+Welcome to Ubuntu 14.04.3 LTS (GNU/Linux 3.19.0-25-generic x86_64)
 
-	//set minSup
-	minSup = 3;
+ * Documentation:  https://help.ubuntu.com/
 
-	struct timeval benchmark;
-	gettimeofday(&benchmark, NULL);
-	long startTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
-	//to find frequent item set
-	vector< vector<string> > L1 = getL1FromDatabase();
-	 while(L1.size() > 0)
-	 {
-	 	L1 = aprioriGen(L1);
-	 }
-	gettimeofday(&benchmark, NULL);
-	long endTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
-	ofstream outFile;
-	outFile.open ("result_10k.txt");
-	outFile << (endTime - startTime) <<"ms";
-	outFile.close();
-	cout<<"Time to run: "<<endTime - startTime<<"ms" << endl;
+  System information as of Mon Jun 13 13:42:11 ICT 2016
+
+  System load:  0.0               Processes:           248
+  Usage of /:   5.0% of 74.40GB   Users logged in:     0
+  Memory usage: 1%                IP address for eth0: 192.168.20.201
+  Swap usage:   0%
+
+  Graph this data and manage this system at:
+    https://landscape.canonical.com/
+
+141 packages can be updated.
+70 updates are security updates.
+
+Last login: Sun Jun 12 00:14:42 2016 from 192.168.20.12
+ubuntu@ubuntu:~$ ls lai
+ls: cannot access lai: No such file or directory
+ubuntu@ubuntu:~$ ps
+  PID TTY          TIME CMD
+ 2019 pts/0    00:00:00 bash
+ 2052 pts/0    00:00:00 ps
+ubuntu@ubuntu:~$ clear
+
+
+
+
+
+ubuntu@ubuntu:~$ ls
+demos  WebGoat-Workspace  www
+ubuntu@ubuntu:~$ mkdir DTMD
+ubuntu@ubuntu:~$ cd DTMD/
+ubuntu@ubuntu:~/DTMD$ ls
+ubuntu@ubuntu:~/DTMD$ sudo apt-get install git
+[sudo] password for ubuntu:
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+git is already the newest version.
+0 upgraded, 0 newly installed, 0 to remove and 137 not upgraded.
+ubuntu@ubuntu:~/DTMD$ clear
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ubuntu@ubuntu:~/DTMD$ ls
+ubuntu@ubuntu:~/DTMD$ git clone https://gitlab.com/blackntt/para_alg_freq_item_set.git
+Cloning into 'para_alg_freq_item_set'...
+Username for 'https://gitlab.com': minhvn
+Password for 'https://minhvn@gitlab.com':
+remote: Counting objects: 226, done.
+remote: Compressing objects: 100% (131/131), done.
+remote: Total 226 (delta 105), reused 195 (delta 91)
+Receiving objects: 100% (226/226), 17.58 MiB | 771.00 KiB/s, done.
+Resolving deltas: 100% (105/105), done.
+Checking connectivity... done.
+ubuntu@ubuntu:~/DTMD$ ls
+para_alg_freq_item_set
+ubuntu@ubuntu:~/DTMD$ cd para_alg_freq_item_set/
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set$ git checkout parallel
+Branch parallel set up to track remote branch parallel from origin.
+Switched to a new branch 'parallel'
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set$ ls status
+ls: cannot access status: No such file or directory
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set$ git status
+On branch parallel
+Your branch is up-to-date with 'origin/parallel'.
+
+nothing to commit, working directory clean
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set$ ls
+datasource  para_source  Plan-CGRID-1.txt  README.md  sequence_source
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set$ cd sequence_source/
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set/sequence_source$ ls
+helper.cpp  main.cpp  transaction.cpp
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set/sequence_source$ cd ../datasource/
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set/datasource$ ls
+100k.txt  10k.txt  20k.txt  50k.txt  540k.txt  5k.txt  test.txt
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set/datasource$ clear
+
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set/datasource$ ls
+100k.txt  10k.txt  20k.txt  50k.txt  540k.txt  5k.txt  test.txt
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set/datasource$ ls
+100k.txt  10k.txt  20k.txt  50k.txt  540k.txt  5k.txt  test.txt
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set/datasource$ ls
+100k.txt  10k.txt  20k.txt  50k.txt  540k.txt  5k.txt  test.txt
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set/datasource$ clear
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set/datasource$ ls
+100k.txt  10k.txt  20k.txt  50k.txt  540k.txt  5k.txt  test.txt
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set/datasource$ git pull origin parallel
+Username for 'https://gitlab.com': minhvn
+Password for 'https://minhvn@gitlab.com':
+remote: Counting objects: 10, done.
+remote: Compressing objects: 100% (10/10), done.
+remote: Total 10 (delta 5), reused 0 (delta 0)
+Unpacking objects: 100% (10/10), done.
+From https://gitlab.com/blackntt/para_alg_freq_item_set
+ * branch            parallel   -> FETCH_HEAD
+   f912ebb..88746bd  parallel   -> origin/parallel
+Updating f912ebb..88746bd
+Fast-forward
+ datasource/1k.txt | 1000 ++++++++++++++++++
+ datasource/2k.txt | 2000 ++++++++++++++++++++++++++++++++++++
+ datasource/3k.txt | 3000 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ datasource/4k.txt |    1 +
+ datasource/5k.txt | 8367 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++------------------------------------------------------------
+ 5 files changed, 11001 insertions(+), 3367 deletions(-)
+ create mode 100644 datasource/1k.txt
+ create mode 100644 datasource/2k.txt
+ create mode 100644 datasource/3k.txt
+ create mode 100644 datasource/4k.txt
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set/datasource$ ls
+100k.txt  10k.txt  1k.txt  20k.txt  2k.txt  3k.txt  4k.txt  50k.txt  540k.txt  5k.txt  test.txt
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set/datasource$ cd ../
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set$ ls
+datasource  para_source  Plan-CGRID-1.txt  README.md  sequence_source
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set$ clear
+
+
+
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set$ ls
+datasource  para_source  Plan-CGRID-1.txt  README.md  sequence_source
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set$ git checkout parallel
+Already on 'parallel'
+Your branch is up-to-date with 'origin/parallel'.
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set$ ls
+datasource  para_source  Plan-CGRID-1.txt  README.md  sequence_source
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set$ clear
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set$ ls
+datasource  para_source  Plan-CGRID-1.txt  README.md  sequence_source
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set$ cd para_source/
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set/para_source$ ls
+helper.cpp  main.cpp  transaction.cpp
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set/para_source$ vi main.cpp
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set/para_source$
+ubuntu@ubuntu:~/DTMD/para_alg_freq_item_set/para_source$ packet_write_wait: Connection to 192.168.20.201: Broken pipe
+MinhVN:sequence_source MinhVN$ ssh ubuntu@192.168.20.202
+Welcome to Ubuntu 14.04.3 LTS (GNU/Linux 3.19.0-25-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com/
+
+  System information as of Wed Jun 15 15:43:12 ICT 2016
+
+  System load:  0.0               Processes:           208
+  Usage of /:   2.2% of 74.40GB   Users logged in:     0
+  Memory usage: 0%                IP address for eth0: 192.168.20.202
+  Swap usage:   0%
+
+  Graph this data and manage this system at:
+    https://landscape.canonical.com/
+
+142 packages can be updated.
+71 updates are security updates.
+
+Last login: Wed Jun 15 15:43:12 2016 from 192.168.14.90
+ubuntu@ubuntu:~$ ls
+DTDM
+ubuntu@ubuntu:~$ cd DTDM/para_alg_freq_item_set/sequence_source/
+ubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ ls
+1_result.txt  2_result.txt  3_result.txt  4_result.txt  5_result.txt  6_result.txt  7_result.txt  app  helper.cpp  main.cpp  transaction.cpp
+ubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ cat 7_result.txt
+1659260msubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ cat 2_result.txt
+3msubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ clear
+
+ubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ ls -lai
+total 160
+3932366 drwxrwxr-x 2 ubuntu ubuntu   4096 Jun 15 16:40 .
+3932173 drwxrwxr-x 5 ubuntu ubuntu   4096 Jun  9 11:11 ..
+3932595 -rw-rw-r-- 1 ubuntu ubuntu      3 Jun 15 16:12 1_result.txt
+3932615 -rw-rw-r-- 1 ubuntu ubuntu      3 Jun 15 16:12 2_result.txt
+3932616 -rw-rw-r-- 1 ubuntu ubuntu      3 Jun 15 16:12 3_result.txt
+3932617 -rw-rw-r-- 1 ubuntu ubuntu      3 Jun 15 16:12 4_result.txt
+3932618 -rw-rw-r-- 1 ubuntu ubuntu      3 Jun 15 16:12 5_result.txt
+3932619 -rw-rw-r-- 1 ubuntu ubuntu      4 Jun 15 16:12 6_result.txt
+3932620 -rw-rw-r-- 1 ubuntu ubuntu      9 Jun 15 16:40 7_result.txt
+3932493 -rwxrwxr-x 1 ubuntu ubuntu 108914 Jun 15 16:12 app
+3932367 -rw-rw-r-- 1 ubuntu ubuntu   1875 Jun 15 09:06 helper.cpp
+3932368 -rw-rw-r-- 1 ubuntu ubuntu   5594 Jun 15 16:11 main.cpp
+3932369 -rw-rw-r-- 1 ubuntu ubuntu    460 Jun  9 11:11 transaction.cpp
+ubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ rm 1_result.txt 2_result.txt 3_result.txt 4_result.txt 5_result.txt 6_result.txt 7_result.txt
+ubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ ls
+app  helper.cpp  main.cpp  transaction.cpp
+ubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ ./app &
+[1] 3578
+ubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ 1_result.txt
+2_result.txt
+3_result.txt
+4_result.txt
+5_result.txt
+6_result.txt
+7_result.txt
+^C
+ubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ ps
+  PID TTY          TIME CMD
+ 3535 pts/0    00:00:00 bash
+ 3578 pts/0    00:00:50 app
+ 3579 pts/0    00:00:00 ps
+ubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ ls
+1_result.txt  2_result.txt  3_result.txt  4_result.txt  5_result.txt  6_result.txt  app  helper.cpp  main.cpp  transaction.cpp
+ubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ clear
+
+ubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ ls
+1_result.txt  2_result.txt  3_result.txt  4_result.txt  5_result.txt  6_result.txt  app  helper.cpp  main.cpp  transaction.cpp
+ubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ ls
+1_result.txt  2_result.txt  3_result.txt  4_result.txt  5_result.txt  6_result.txt  app  helper.cpp  main.cpp  transaction.cpp
+ubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ ps
+  PID TTY          TIME CMD
+ 3535 pts/0    00:00:00 bash
+ 3578 pts/0    00:02:04 app
+ 3587 pts/0    00:00:00 ps
+ubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ ps
+  PID TTY          TIME CMD
+ 3535 pts/0    00:00:00 bash
+ 3578 pts/0    00:05:48 app
+ 3588 pts/0    00:00:00 ps
+ubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ ls -lai
+total 156
+3932366 drwxrwxr-x 2 ubuntu ubuntu   4096 Jun 16 08:15 .
+3932173 drwxrwxr-x 5 ubuntu ubuntu   4096 Jun  9 11:11 ..
+3932595 -rw-rw-r-- 1 ubuntu ubuntu      3 Jun 16 08:15 1_result.txt
+3932615 -rw-rw-r-- 1 ubuntu ubuntu      3 Jun 16 08:15 2_result.txt
+3932616 -rw-rw-r-- 1 ubuntu ubuntu      3 Jun 16 08:15 3_result.txt
+3932617 -rw-rw-r-- 1 ubuntu ubuntu      3 Jun 16 08:15 4_result.txt
+3932618 -rw-rw-r-- 1 ubuntu ubuntu      3 Jun 16 08:15 5_result.txt
+3932619 -rw-rw-r-- 1 ubuntu ubuntu      4 Jun 16 08:15 6_result.txt
+3932493 -rwxrwxr-x 1 ubuntu ubuntu 108914 Jun 15 16:12 app
+3932367 -rw-rw-r-- 1 ubuntu ubuntu   1875 Jun 15 09:06 helper.cpp
+3932368 -rw-rw-r-- 1 ubuntu ubuntu   5594 Jun 15 16:11 main.cpp
+3932369 -rw-rw-r-- 1 ubuntu ubuntu    460 Jun  9 11:11 transaction.cpp
+ubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ clear
+
+
+
+
+ubuntu@ubuntu:~/DTDM/para_alg_freq_item_set/sequence_source$ vi main.cpp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                if(l1.at(k-1).compare(l2.at(k-1)) != 0)
+                                {
+                                        vector<string> temp = l1;
+                                        temp.push_back(l2.at(k-1));
+                                        bool isInValid = hasInFrequentSubset(temp, largeItemSetK);
+                                        if(!isInValid)
+                                        {
+                                                result.push_back(temp);
+                                        }
+                                }
+                        }
+                }
+        }
+        return removeAllItemSet_BelowMinSupp(result);
+
+}
+
+//for test
+template<typename T>
+ostream& operator<< (ostream& out, const vector<T>& v) {
+    out << "[";
+    size_t last = v.size() - 1;
+    for(size_t i = 0; i < v.size(); ++i) {
+        out << v[i];
+        if (i != last)
+            out << ", ";
+    }
+    out << "]";
+    return out;
+}
+
+
+//testing main
+int main(int argc, char* argv[]){
+	for (int r = 1; r <= 7; r++) {
+    //read database
+    string s_r = to_string(r);
+    string file_name_input = "../datasource/" + s_r + ".txt";
+    string file_name_output = s_r + "_result.txt";
+    cout<< file_name_output << endl;
+    database = TeamHelper::getDatabase(file_name_input);
+
+		//set minSup
+		minSup = 3;
+
+		struct timeval benchmark;
+		gettimeofday(&benchmark, NULL);
+		long startTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
+		//to find frequent item set
+		vector< vector<string> > L1 = getL1FromDatabase();
+		 while(L1.size() > 0)
+		 {
+		 	L1 = aprioriGen(L1);
+		 }
+		gettimeofday(&benchmark, NULL);
+		long endTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
+		ofstream outFile;
+    outFile.open (file_name_output.c_str());
+    outFile << (endTime - startTime) <<"ms";
+    outFile.close();
+	}
 	return 0;
 }
