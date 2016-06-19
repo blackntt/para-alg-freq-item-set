@@ -237,7 +237,10 @@ int main(int argc, char* argv[]){
 		long endTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
 		ofstream outFile;
 		outFile.open (file_name_output.c_str());
-		outFile << (endTime - startTime) <<"ms";
+		outFile << (endTime - startTime) << " ms" << endl;
+		for (int k = 0; k < frequentSet.size(); k++) {
+			outFile << frequentSet[k] << endl;
+		}
 		outFile.close();
 	}
 
