@@ -291,7 +291,6 @@ int main(int argc, char* argv[]){
     string s_r = to_string(r);
     string file_name_input = "../datasource/" + s_r + ".txt";
     string file_name_output = s_r + "_result.txt";
-    cout<< file_name_output << endl;
     database = TeamHelper::getDatabase(file_name_input);
 
 		//set minSup
