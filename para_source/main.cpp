@@ -292,7 +292,7 @@ int main(int argc, char* argv[]){
     string file_name_input = "../datasource/" + s_r + ".txt";
     string file_name_output = s_r + "_result.txt";
     database = TeamHelper::getDatabase(file_name_input);
-
+    frequentSet.clear();
 		//set minSup
 		minSup = 3;
 
