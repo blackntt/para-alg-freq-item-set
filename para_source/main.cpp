@@ -6,6 +6,8 @@
 
 #include "helper.cpp"
 #include <thread>
+#include <mutex>
+
 using namespace std;
 
 //Global database
@@ -155,39 +157,61 @@ vector< vector<string> > getL1FromDatabase()
 	return removeAllItemSet_BelowMinSupp(c1Vector);
 }
 
-// HaHV: get subset recursion function
-void getSubsets(vector<string> superSet, int k, int idx, set<string>* current,vector< vector<string> >* solution) {
-    //successful stop clause
-    if ((*current).size() == k) {
-		vector<string> temp(k);
-		std::copy((*current).begin(), (*current).end(), temp.begin());
-		(*solution).push_back(temp);
-        return;
-    }
-    //unseccessful stop clause
-    if (idx == superSet.size()) return;
-	string x = superSet.at(idx);
-	(*current).insert(x);
-    //"guess" x is in the subset
-    getSubsets(superSet, k, idx+1, current, solution);
-	(*current).erase(x);
-    //"guess" x is not in the subset
-    getSubsets(superSet, k, idx+1, current, solution);
-}
-
 // get k-subset of superset with (k+1) elements
 vector< vector<string> >* getSubsets(const vector<string>& superSet, int k) {
-    vector< vector<string> > *res = new vector< vector<string> >();
-	set<string> *current = new set<string>();
+    
+	vector< vector<string> > *res = new vector< vector<string> >();
 
-	getSubsets(superSet, k, 0, current, res);
+	// k-subset will be generate by selecting k in total (k+1) elements in superSet
+	for (int i = 0; i < superSet.size(); i++) 
+	{
+		vector<string> tempKsubset;
+		//eliminate an element to create a k-subset.
+		for (int j = 0; j < superSet.size(); j++) 
+		{
+			if (i == j)
+			{
+				continue;
+			} else 
+			{
+				tempKsubset.push_back(superSet.at(j));
+			}
+		}
 
-	delete current;
+		(*res).push_back(tempKsubset);
+	}
 
     return res;
 }
 
-//check if any k-subset doesn't exist in L(k)
+//for lock and unlock
+std::mutex mu;
+void checkOneSubsetWithKItem(bool& totalResult, const vector<string> & sub, vector< vector<string> >& largeItemSetK) {
+
+	bool foundSubInLK = false;
+
+	for(int j = 0; j < largeItemSetK.size(); j++) {
+		if(totalResult == true) return;
+
+		vector<string> kItemSet = largeItemSetK.at(j);
+		if(sub == kItemSet) {
+
+			foundSubInLK = true;
+			break;
+		}
+	}
+
+	// k-subitem doest exists in Lk
+	if(foundSubInLK == false) {
+		mu.lock();
+		totalResult = true;
+		mu.unlock();
+
+		return;
+	}
+}
+
+//check if any k-subset doesn't exist in L(k) with parallel programming
 bool hasInFrequentSubset(const vector<string> &candidateSetKplus1, vector< vector<string> >& largeItemSetK)
 {
 	long k = candidateSetKplus1.size() - 1;
@@ -201,25 +225,8 @@ bool hasInFrequentSubset(const vector<string> &candidateSetKplus1, vector< vecto
 	for(int i = 0; i < (*subsets).size(); i++) {
 
 		vector<string> sub = (*subsets).at(i);
-
-		bool foundSubInLK = false;
-
-		for(int j = 0; j < largeItemSetK.size(); j++) {
-
-			vector<string> kItemSet = largeItemSetK.at(j);
-			if(sub == kItemSet) {
-
-				foundSubInLK = true;
-				break;
-			}
-		}
-
-		// k-subitem doest exists in Lk
-		if(foundSubInLK == false) {
-
-			result = true;
-			break;
-		}
+		thread subtask(&checkOneSubsetWithKItem,std::ref(result),std::ref(sub), std::ref(largeItemSetK));
+		subtask.join();
 	}
 
 	delete subsets;
