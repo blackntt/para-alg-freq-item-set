@@ -286,7 +286,7 @@ ostream& operator<< (ostream& out, const vector<T>& v) {
 
 //testing main
 int main(int argc, char* argv[]){
-	for (int r = 1; r <= 10; r++) {
+	for (int r = 8; r <= 10; r++) {
     //read database
     string s_r = to_string(r);
     string file_name_input = "../datasource/" + s_r + ".txt";
