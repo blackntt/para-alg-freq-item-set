@@ -311,8 +311,8 @@ int main(int argc, char* argv[]){
 		ofstream outFile;
 		outFile.open (file_name_output.c_str());
 		outFile << (endTime - startTime) << "ms" << endl;
-		for (int k = 0; k < frequent.size(); k++) {
-			outFile << frequent[k] << endl;
+		for (int k = 0; k < frequentSet.size(); k++) {
+			outFile << frequentSet[k] << endl;
 		}
 		outFile.close();
 	}
