@@ -309,9 +309,12 @@ int main(int argc, char* argv[]){
 		gettimeofday(&benchmark, NULL);
 		long endTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
 		ofstream outFile;
-    outFile.open (file_name_output.c_str());
-    outFile << (endTime - startTime) <<"ms";
-    outFile.close();
+		outFile.open (file_name_output.c_str());
+		outFile << (endTime - startTime) << "ms" << endl;
+		for (int k = 0; k < frequent.size(); k++) {
+			outFile << frequent[k] << endl;
+		}
+		outFile.close();
 	}
 	return 0;
 }
