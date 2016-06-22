@@ -357,7 +357,7 @@ ostream& operator<< (ostream& out, const vector<T>& v) {
     return out;
 }
 //testing main
-int main1(int argc, char* argv[]){
+int main(int argc, char* argv[]){
 	for (int r = 1; r <= 10; r++) {
     //read database
     string s_r = to_string(r);
@@ -389,58 +389,5 @@ int main1(int argc, char* argv[]){
 	}
 	return 0;
 }
-//testing main
-int main(int argc, char* argv[]){
-	//for (int r = 1; r <= 10; r++) {
-    //read database
-    //string s_r = to_string(r);
-    //string file_name_input = "../datasource/" + s_r + ".txt";
-    //string file_name_output = s_r + "_result.txt";
-    //database = TeamHelper::getDatabase(file_name_input);
-    frequentSet.clear();
-    
-    vector<string> item1;
-	item1.push_back("a");
-	item1.push_back("b");
-	item1.push_back("e");
-	vector<string> item2;
-	item2.push_back("a");
-	item2.push_back("d");
-	item2.push_back("e");
-	vector<string> item3;
-	item3.push_back("a");
-	item3.push_back("b");
-	item3.push_back("e");
-	
-	
-	database.push_back(Transaction("1",item1));
-	database.push_back(Transaction("2",item2));
-	database.push_back(Transaction("3",item3));
 
-		//set minSup
-		minSup = 2;
-
-		struct timeval benchmark;
-		gettimeofday(&benchmark, NULL);
-		long startTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
-		//to find frequent item set
-		vector< vector<string> > L1 = getL1FromDatabase();
-
-		 while(L1.size() > 0)
-		 {
-		 	L1 = aprioriGen(L1);
-		 }
-		gettimeofday(&benchmark, NULL);
-		long endTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
-		//ofstream outFile;
-		//outFile.open (file_name_output.c_str());
-		//outFile << (endTime - startTime) << "ms" << endl;
-		for (int k = 0; k < frequentSet.size(); k++) {
-			cout << frequentSet[k] << endl;
-		}
-		cout<< (endTime - startTime) << "ms" << endl;
-		//outFile.close();
-	//}
-	return 0;
-}
 
