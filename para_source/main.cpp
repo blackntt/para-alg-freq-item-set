@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 #include <sys/time.h>
-
+#include <math.h>
 #include "helper.cpp"
 #include <thread>
 #include <mutex>
@@ -16,7 +16,7 @@ vector< vector<string> > frequentSet;
 //set minSup
 int minSup;
 
-const int numOfCPU = 16;
+const int numOfCPU = 2;
 
 
 void removeAllItemSet_BelowMinSupp_para_unit(
@@ -71,8 +71,12 @@ vector< vector<string> > removeAllItemSet_BelowMinSupp(
 
 
 	vector< vector<string> > finalResults;
+	
+		
+	
+	int subSize = ceil(float(itemSets.size())/numOfCPU);
 
-	int subSize = itemSets.size()/numOfCPU;
+	//int subSize = itemSets.size()/numOfCPU;
 
 	vector< vector<string> > subSets[numOfCPU];
 	vector< vector<string> > results[numOfCPU];
@@ -81,7 +85,7 @@ vector< vector<string> > removeAllItemSet_BelowMinSupp(
 	for(int i=0;i<numOfCPU;i++){
 
 		int curMaxIndex = i*subSize+subSize;
-		if(curMaxIndex<itemSets.size())
+		if(curMaxIndex>itemSets.size())
 			curMaxIndex = itemSets.size();
 		for(;j<curMaxIndex;j++)
 			subSets[i].push_back(itemSets[j]);
@@ -120,14 +124,15 @@ void getL1Parallel(vector< Transaction > db, vector <string> &result)
 //DUCDM create large item set with one element
 vector< vector<string> > getL1FromDatabase()
 {
-	int subSize = database.size()/numOfCPU;
+	int subSize = subSize = ceil(float(database.size())/numOfCPU);;
 	vector<Transaction> dataSubSets[numOfCPU];
 	vector <string> results[numOfCPU];
 	int j=0;
 
 	for(int i=0;i<numOfCPU;i++){
 		int curMaxIndex = i*subSize+subSize;
-		if(curMaxIndex < database.size())
+//		if(curMaxIndex < database.size())
+		if(curMaxIndex > database.size())
 			curMaxIndex = database.size();
 		for(;j<curMaxIndex;j++)
 			dataSubSets[i].push_back(database.at(j));
@@ -234,16 +239,14 @@ bool hasInFrequentSubset(const vector<string> &candidateSetKplus1, vector< vecto
 	return result;
 }
 
-//DUCDM gen Large Item from Item Set K element
-vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
-{
-	vector< vector<string> > result;
+void aprioriGen_Unit(int startIndex, int stopIndex,
+	vector< vector<string> > largeItemSetK,
+	vector< vector<string> > &result){
+
 	int size = largeItemSetK.size();
 	int k = largeItemSetK.at(0).size();
-	for(int i = 0; i < size; i++)
+	for(int i = startIndex; i <= stopIndex; i++)
 	{
-		//Add to frequent set (Global)
-		frequentSet.push_back(largeItemSetK.at(i));
 		for(int j = i+1; j < size; j++)
 		{
 			vector<string> l1 = largeItemSetK.at(i);
@@ -273,7 +276,55 @@ vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 			}
 		}
 	}
-	return removeAllItemSet_BelowMinSupp(result);
+	
+	
+}
+
+//DUCDM gen Large Item from Item Set K element
+vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
+{
+	
+	vector< vector<string> > finalResults;
+
+
+
+	
+	int subSize = ceil(float(largeItemSetK.size())/numOfCPU);
+	
+	vector< int > startIndexArr;
+	vector< int > stopIndexArr;
+
+	vector< vector<string> > results[numOfCPU];
+	
+	
+	//copy to frequent Item sets of before step
+	for(int i=0;i<largeItemSetK.size();i++){
+		frequentSet.push_back(largeItemSetK.at(i));
+	}
+	//start new
+	int j=0;
+	for(int i=0;i<numOfCPU;i++){
+		startIndexArr.push_back(i*subSize);
+		int curMaxIndex = i*subSize+subSize;
+		if(curMaxIndex>largeItemSetK.size())
+			curMaxIndex = largeItemSetK.size();
+		stopIndexArr.push_back(curMaxIndex-1);
+	}
+	vector< thread > threads;
+	for(int i=0;i<numOfCPU;i++){
+		threads.push_back(thread(aprioriGen_Unit,startIndexArr[i],stopIndexArr[i],largeItemSetK,std::ref(results[i])));
+	}
+	for(int i=0;i<numOfCPU;i++){
+		threads[i].join();
+	}
+
+	for(int i=0;i<numOfCPU;i++){
+		for(j=0;j<results[i].size();j++){
+			finalResults.push_back((results[i]).at(j));
+		}
+	}
+
+	return removeAllItemSet_BelowMinSupp(finalResults);
 
 }
 
@@ -290,7 +341,6 @@ ostream& operator<< (ostream& out, const vector<T>& v) {
     out << "]";
     return out;
 }
-
 //testing main
 int main(int argc, char* argv[]){
 	for (int r = 1; r <= 10; r++) {
@@ -324,3 +374,5 @@ int main(int argc, char* argv[]){
 	}
 	return 0;
 }
+
+
