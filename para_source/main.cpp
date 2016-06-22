@@ -16,7 +16,7 @@ vector< vector<string> > frequentSet;
 //set minSup
 int minSup;
 
-const int numOfCPU = 2;
+const int numOfCPU = 8;
 
 
 void removeAllItemSet_BelowMinSupp_para_unit(
@@ -76,30 +76,35 @@ vector< vector<string> > removeAllItemSet_BelowMinSupp(
 	
 	int subSize = ceil(float(itemSets.size())/numOfCPU);
 
-	//int subSize = itemSets.size()/numOfCPU;
 
-	vector< vector<string> > subSets[numOfCPU];
+
+	vector< vector< vector<string> > >  subSets;
 	vector< vector<string> > results[numOfCPU];
 
 	int j=0;
+	bool isOutOfRange = false;
 	for(int i=0;i<numOfCPU;i++){
-
+		vector< vector<string> > iSubSet;
 		int curMaxIndex = i*subSize+subSize;
-		if(curMaxIndex>itemSets.size())
+		if(curMaxIndex>itemSets.size()){
 			curMaxIndex = itemSets.size();
+			isOutOfRange = true;
+		}
 		for(;j<curMaxIndex;j++)
-			subSets[i].push_back(itemSets[j]);
+			iSubSet.push_back(itemSets[j]);
+		subSets.push_back(iSubSet);
+		if(isOutOfRange) break;
 	}
 	vector< thread > threads;
-	for(int i=0;i<numOfCPU;i++){
+	for(int i=0;i<subSets.size();i++){
 		threads.push_back(thread(removeAllItemSet_BelowMinSupp_para_unit,subSets[i],std::ref(results[i])));
 	}
 
-	for(int i=0;i<numOfCPU;i++){
+	for(int i=0;i<subSets.size();i++){
 		threads[i].join();
 	}
 
-	for(int i=0;i<numOfCPU;i++){
+	for(int i=0;i<subSets.size();i++){
 		for(j=0;j<results[i].size();j++){
 			finalResults.push_back((results[i]).at(j));
 		}
@@ -125,28 +130,33 @@ void getL1Parallel(vector< Transaction > db, vector <string> &result)
 vector< vector<string> > getL1FromDatabase()
 {
 	int subSize = subSize = ceil(float(database.size())/numOfCPU);;
-	vector<Transaction> dataSubSets[numOfCPU];
+	vector< vector< Transaction > > dataSubSets;
 	vector <string> results[numOfCPU];
 	int j=0;
-
+	bool isOutOfRange = false;
 	for(int i=0;i<numOfCPU;i++){
+		vector< Transaction > isDataSubSet;
 		int curMaxIndex = i*subSize+subSize;
 //		if(curMaxIndex < database.size())
-		if(curMaxIndex > database.size())
+		if(curMaxIndex > database.size()){
 			curMaxIndex = database.size();
+			isOutOfRange = true;
+		}
 		for(;j<curMaxIndex;j++)
-			dataSubSets[i].push_back(database.at(j));
+			isDataSubSet.push_back(database.at(j));
+		dataSubSets.push_back(isDataSubSet);
+		if(isOutOfRange) break;
 	}
 	vector< thread > threads;
-	for(int i=0; i<numOfCPU; i++){
+	for(int i=0; i<dataSubSets.size(); i++){
 		threads.push_back(thread(&getL1Parallel, dataSubSets[i], std::ref(results[i])));
 	}
 
-	for(int i=0;i<numOfCPU;i++){
+	for(int i=0;i<dataSubSets.size();i++){
 		threads[i].join();
 	}
 	set <string> C1;
-	for(int i=0;i<numOfCPU;i++){
+	for(int i=0;i<dataSubSets.size();i++){
 		for(j=0;j<results[i].size();j++){
 			C1.insert((results[i]).at(j));
 		}
@@ -303,22 +313,27 @@ vector< vector<string> > aprioriGen(vector< vector<string> > largeItemSetK)
 	}
 	//start new
 	int j=0;
+	bool isOutOfRange = false;
 	for(int i=0;i<numOfCPU;i++){
 		startIndexArr.push_back(i*subSize);
 		int curMaxIndex = i*subSize+subSize;
-		if(curMaxIndex>largeItemSetK.size())
+		if(curMaxIndex>largeItemSetK.size()){
 			curMaxIndex = largeItemSetK.size();
+			isOutOfRange = true;	
+		}
 		stopIndexArr.push_back(curMaxIndex-1);
+		
+		if(isOutOfRange) break;
 	}
 	vector< thread > threads;
-	for(int i=0;i<numOfCPU;i++){
+	for(int i=0;i<startIndexArr.size();i++){
 		threads.push_back(thread(aprioriGen_Unit,startIndexArr[i],stopIndexArr[i],largeItemSetK,std::ref(results[i])));
 	}
-	for(int i=0;i<numOfCPU;i++){
+	for(int i=0;i<startIndexArr.size();i++){
 		threads[i].join();
 	}
 
-	for(int i=0;i<numOfCPU;i++){
+	for(int i=0;i<startIndexArr.size();i++){
 		for(j=0;j<results[i].size();j++){
 			finalResults.push_back((results[i]).at(j));
 		}
@@ -342,7 +357,7 @@ ostream& operator<< (ostream& out, const vector<T>& v) {
     return out;
 }
 //testing main
-int main(int argc, char* argv[]){
+int main1(int argc, char* argv[]){
 	for (int r = 1; r <= 10; r++) {
     //read database
     string s_r = to_string(r);
@@ -374,5 +389,58 @@ int main(int argc, char* argv[]){
 	}
 	return 0;
 }
+//testing main
+int main(int argc, char* argv[]){
+	//for (int r = 1; r <= 10; r++) {
+    //read database
+    //string s_r = to_string(r);
+    //string file_name_input = "../datasource/" + s_r + ".txt";
+    //string file_name_output = s_r + "_result.txt";
+    //database = TeamHelper::getDatabase(file_name_input);
+    frequentSet.clear();
+    
+    vector<string> item1;
+	item1.push_back("a");
+	item1.push_back("b");
+	item1.push_back("e");
+	vector<string> item2;
+	item2.push_back("a");
+	item2.push_back("d");
+	item2.push_back("e");
+	vector<string> item3;
+	item3.push_back("a");
+	item3.push_back("b");
+	item3.push_back("e");
+	
+	
+	database.push_back(Transaction("1",item1));
+	database.push_back(Transaction("2",item2));
+	database.push_back(Transaction("3",item3));
 
+		//set minSup
+		minSup = 2;
+
+		struct timeval benchmark;
+		gettimeofday(&benchmark, NULL);
+		long startTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
+		//to find frequent item set
+		vector< vector<string> > L1 = getL1FromDatabase();
+
+		 while(L1.size() > 0)
+		 {
+		 	L1 = aprioriGen(L1);
+		 }
+		gettimeofday(&benchmark, NULL);
+		long endTime = benchmark.tv_sec * 1000 + benchmark.tv_usec / 1000;
+		//ofstream outFile;
+		//outFile.open (file_name_output.c_str());
+		//outFile << (endTime - startTime) << "ms" << endl;
+		for (int k = 0; k < frequentSet.size(); k++) {
+			cout << frequentSet[k] << endl;
+		}
+		cout<< (endTime - startTime) << "ms" << endl;
+		//outFile.close();
+	//}
+	return 0;
+}
 
