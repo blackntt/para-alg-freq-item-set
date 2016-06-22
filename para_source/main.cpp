@@ -16,7 +16,7 @@ vector< vector<string> > frequentSet;
 //set minSup
 int minSup;
 
-const int numOfCPU = 16;
+const int numOfCPU = 4;
 
 
 void removeAllItemSet_BelowMinSupp_para_unit(
